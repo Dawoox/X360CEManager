@@ -1,0 +1,17 @@
+C:\Workspace\C#\X360CEManager\bin\Debug\extension.yaml
+C:\Workspace\C#\X360CEManager\bin\Debug\Localization\en_US.xaml
+C:\Workspace\C#\X360CEManager\bin\Debug\icon.png
+C:\Workspace\C#\X360CEManager\bin\Debug\X360CEManager.dll
+C:\Workspace\C#\X360CEManager\bin\Debug\X360CEManager.pdb
+C:\Workspace\C#\X360CEManager\bin\Debug\Playnite.SDK.dll
+C:\Workspace\C#\X360CEManager\bin\Debug\Playnite.SDK.xml
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.csproj.AssemblyReference.cache
+C:\Workspace\C#\X360CEManager\obj\Debug\App.baml
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManagerSettingsView.baml
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManagerSettingsView.g.cs
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager_MarkupCompile.cache
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.g.resources
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.csproj.CoreCompileInputs.cache
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.csproj.CopyComplete
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.dll
+C:\Workspace\C#\X360CEManager\obj\Debug\X360CEManager.pdb
