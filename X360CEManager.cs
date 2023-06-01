@@ -59,25 +59,21 @@ namespace X360CEManager
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
             // Add code to be executed when Playnite is initialized.
+
+            // Start x360ce if config so 
+            if (!settings.Settings.startWithPlaynite) { return; }
             
-            // If the path is not return
-            if (settings.Settings.x360cePath.Length <= 0) return;
-            
-            logger.Debug("Executable path: " + settings.Settings.x360cePath);
-            x360ceProcess.StartInfo.FileName = settings.Settings.x360cePath;
-            x360ceProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            
-            // If x360ce is set to not be started return
-            if (!settings.Settings.startWithPlaynite) return;
-            
-            logger.Debug("X360CE started with Playnite");
-            x360ceProcess.Start();
+            logger.Debug("X360CE scheduled to start with Playnite");
+            startEmulator();
         }
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
             // Add code to be executed when Playnite is shutting down.
-            x360ceProcess.Kill();
+            
+            // Always closing x360ce when closing (to be sure)
+            logger.Debug("X360CE scheduled to stop");
+            stopEmulator();
         }
 
         public override void OnLibraryUpdated(OnLibraryUpdatedEventArgs args)
@@ -102,6 +98,32 @@ namespace X360CEManager
             {
                 MenuSection = "X360CEManager"
             };
+        }
+
+        private void startEmulator() 
+        {
+            if (getEmulatorPath.Equals(null))
+            {
+                logger.Error("X360CE path not set");
+                return;
+            }
+            x360ceProcess.StartInfo.FileName = settings.Settings.x360cePath;
+            x360ceProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            x360ceProcess.start();
+            logger.Debug("X360CE started, " + settings.Settings.x360cePath);
+        }
+
+        private void stopEmulator()
+        {
+            x360ceProcess.Kill();
+            logger.Debug("X360CE stopped");
+        }
+
+        private String? getEmulatorPath()
+        {
+            var path = settings.Settings.x360cePath;
+            if (path.Equals(String.Empty)) { return null; }
+            return settings.Settings.x360cePath;
         }
     }
 }
