@@ -27,7 +27,8 @@
 			"extensions": [
 				"streetsidesoftware.code-spell-checker",
 				"whizkydee.material-palenight-theme",
-				"ms-dotnettools.csharp"
+				"jchannon.csharpextensions",
+				"atommaterial.a-file-icon-vscode"
 			]
 		}
 	}
