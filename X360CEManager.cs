@@ -31,35 +31,28 @@ namespace X360CEManager
             };
         }
 
-        public override void OnGameInstalled(OnGameInstalledEventArgs args)
-        {
-            // Add code to be executed when game is finished installing.
-        }
-
-        public override void OnGameStarted(OnGameStartedEventArgs args)
-        {
-            // Add code to be executed when game is started running.
-        }
-
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             // Add code to be executed when game is preparing to be started.
+            if (args.Game.Tags.Contains("[X360CE]Start with"))
+            {
+                logger.Debug("X360CE scheduled to start with INSERT GAME NAME");
+                startEmulator();
+            }
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
-            // Add code to be executed when game is preparing to be started.
-        }
-
-        public override void OnGameUninstalled(OnGameUninstalledEventArgs args)
-        {
-            // Add code to be executed when game is uninstalled.
+            // Add code to be executed when game is stopped
+            if (args.Game.Tags.Contains("[X360CE]Start with"))
+            {
+                logger.Debug("X360CE scheduled to stop with INSERT GAME NAME");
+                stopEmulator();
+            }
         }
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
-            // Add code to be executed when Playnite is initialized.
-
             // Start x360ce if config so 
             if (!settings.Settings.startWithPlaynite) { return; }
             
@@ -69,16 +62,9 @@ namespace X360CEManager
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
-            // Add code to be executed when Playnite is shutting down.
-            
             // Always closing x360ce when closing (to be sure)
             logger.Debug("X360CE scheduled to stop");
             stopEmulator();
-        }
-
-        public override void OnLibraryUpdated(OnLibraryUpdatedEventArgs args)
-        {
-            // Add code to be executed when library is updated.
         }
 
         public override ISettings GetSettings(bool firstRunSettings)
