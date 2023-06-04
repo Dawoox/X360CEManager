@@ -5,3 +5,6 @@ Version: 1.0
 Module: X360CEManager.dll
 Type: GenericPlugin
 Icon: icon.png
+Links:
+    - Name: Github
+      Url: https://github.com/Dawoox/X360CEManager

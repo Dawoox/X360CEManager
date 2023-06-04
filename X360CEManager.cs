@@ -5,111 +5,133 @@ using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace X360CEManager
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
+    // ReSharper disable once InconsistentNaming
     public class X360CEManager : GenericPlugin
     {
-        private static readonly ILogger logger = LogManager.GetLogger();
+        private static readonly ILogger Logger = LogManager.GetLogger();
+        private static readonly Process X360CeProcess = new Process();
+        private static Tag _flagTag = Tag.Empty;
+        private static bool _emulatorStarted;
 
-        private static Process x360ceProcess = new Process();
-
-        private X360CEManagerSettingsViewModel settings { get; set; }
-
+        private X360CEManagerSettingsViewModel Settings { get; set; }
         public override Guid Id { get; } = Guid.Parse("b69dfabb-9de7-4235-be99-690b4230d9f6");
 
         public X360CEManager(IPlayniteAPI api) : base(api)
         {
-            settings = new X360CEManagerSettingsViewModel(this);
-            Properties = new GenericPluginProperties
-            {
-                HasSettings = true
-            };
+            Settings = new X360CEManagerSettingsViewModel(this);
+            Properties = new GenericPluginProperties { HasSettings = true };
         }
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
-            // Add code to be executed when game is preparing to be started.
-            if (args.Game.Tags.Contains("[X360CE]Start with"))
+            Logger.Trace(args.Game.Name);
+            Logger.Trace(Settings.Settings.startWithSelectedGames.ToString());
+            Logger.Trace(args.Game.Tags.Contains(_flagTag).ToString());
+            // If the game is marked start with the flag-tag and needed settings are true start the emulator
+            if (Settings.Settings.startWithSelectedGames && args.Game.Tags.Contains(_flagTag))
             {
-                logger.Debug("X360CE scheduled to start with INSERT GAME NAME");
-                startEmulator();
+                Logger.Debug("X360CE scheduled to start with " + args.Game.Name);
+                StartEmulator();
             }
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
-            // Add code to be executed when game is stopped
-            if (args.Game.Tags.Contains("[X360CE]Start with"))
+            // If x360ce started with playnite or config to not start with games, return
+            if (Settings.Settings.startWithPlaynite) return;
+            // If x360ce started with the game, closed it
+            if (args.Game.Tags.Contains(_flagTag))
             {
-                logger.Debug("X360CE scheduled to stop with INSERT GAME NAME");
-                stopEmulator();
+                Logger.Debug("X360CE scheduled to stop with " + args.Game.Name);
+                StopEmulator();
             }
         }
 
         public override void OnApplicationStarted(OnApplicationStartedEventArgs args)
         {
-            // Start x360ce if config so 
-            if (!settings.Settings.startWithPlaynite) { return; }
-            
-            logger.Debug("X360CE scheduled to start with Playnite");
-            startEmulator();
+            UpdateTag(); // Make sure the reference to the flagtag is set right
+
+            if (Settings.Settings.startWithPlaynite)    // Start x360ce if config so 
+            {
+                Logger.Debug("X360CE scheduled to start with Playnite");
+                StartEmulator();
+            }
         }
 
         public override void OnApplicationStopped(OnApplicationStoppedEventArgs args)
         {
             // Always closing x360ce when closing (to be sure)
-            logger.Debug("X360CE scheduled to stop");
-            stopEmulator();
+            Logger.Debug("X360CE scheduled to stop");
+            StopEmulator();
         }
 
-        public override ISettings GetSettings(bool firstRunSettings)
-        {
-            return settings;
-        }
-
-        public override UserControl GetSettingsView(bool firstRunSettings)
-        {
-            return new X360CEManagerSettingsView();
-        }
-        
         // To add new game menu items override GetGameMenuItems
         public override IEnumerable<GameMenuItem> GetGameMenuItems(GetGameMenuItemsArgs args)
         {
-            yield return new GameMenuItem
-            {
-                MenuSection = "X360CEManager"
-            };
+            yield return new GameMenuItem { MenuSection = "X360CEManager" };
         }
 
-        private void startEmulator() 
+        private void UpdateTag()
         {
-            if (getEmulatorPath.Equals(null))
+            var found = false;
+            foreach (var tag in PlayniteApi.Database.Tags)
             {
-                logger.Error("X360CE path not set");
+                if (tag.Name == "[X360CE] Start with")
+                {
+                    _flagTag = tag;
+                    found = true;
+                    Logger.Trace("FlagTag found, updating the reference");
+                    break; 
+                }
+            }
+
+            if (!found) // If the tag is not present, add it to the tags database
+            {
+                _flagTag = new Tag("[X360CE] Start with");
+                PlayniteApi.Database.Tags.Add(_flagTag);
+            }
+        }
+        
+        private void StartEmulator() 
+        {
+            if (GetEmulatorPath().Equals(null)) // If the path is not set return
+            {
+                Logger.Error("X360CE path not set");
                 return;
             }
-            x360ceProcess.StartInfo.FileName = settings.Settings.x360cePath;
-            x360ceProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
-            x360ceProcess.start();
-            logger.Debug("X360CE started, " + settings.Settings.x360cePath);
+            
+            if (_emulatorStarted)   // If already started return
+            {
+                Logger.Error("X360CE already started");
+                return;
+            }
+            X360CeProcess.StartInfo.FileName = Settings.Settings.x360cePath;
+            X360CeProcess.StartInfo.WindowStyle = ProcessWindowStyle.Minimized;
+            X360CeProcess.Start();
+            _emulatorStarted = true;
+            Logger.Debug("X360CE started, " + Settings.Settings.x360cePath);
         }
 
-        private void stopEmulator()
+        private static void StopEmulator()
         {
-            x360ceProcess.Kill();
-            logger.Debug("X360CE stopped");
+            X360CeProcess.Kill();
+            _emulatorStarted = false;
+            Logger.Debug("X360CE stopped");
         }
 
-        private String? getEmulatorPath()
+        private string GetEmulatorPath()
         {
-            var path = settings.Settings.x360cePath;
-            if (path.Equals(String.Empty)) { return null; }
-            return settings.Settings.x360cePath;
+            var path = Settings.Settings.x360cePath;
+            // If not set return null
+            return path.Equals(string.Empty) ? null : path;
         }
+        
+        public override ISettings GetSettings(bool firstRunSettings) { return Settings; }
+        public override UserControl GetSettingsView(bool firstRunSettings) { return new X360CEManagerSettingsView(); }
     }
 }
