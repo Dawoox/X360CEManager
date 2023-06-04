@@ -43,7 +43,7 @@ namespace X360CEManager
             // If x360ce started with playnite return
             if (Settings.Settings.startWithPlaynite) return;
             // If x360ce started with the game, stop it
-            if (args.Game.Tags.Contains(_flagTag) || Settings.Settings.startWithAllGames)
+            if (Settings.Settings.startWithAllGames || args.Game.Tags.Contains(_flagTag))
             {
                 Logger.Debug("X360CE scheduled to stop with " + args.Game.Name);
                 StopEmulator();
