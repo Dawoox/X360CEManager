@@ -4,7 +4,7 @@
 library
 C#
 .cs
-C:\Workspace\C#\X360CEManager\obj\Debug\
+C:\Workspace\C#\X360CEManager\src\X360CEManager\obj\Debug\
 X360CEManager
 none
 false
@@ -13,7 +13,7 @@ DEBUG;TRACE
 2897040579
 
 4-25254974
-141011389293
+14-419894605
 App.xaml;X360CEManagerSettingsView.xaml;
 
 False
