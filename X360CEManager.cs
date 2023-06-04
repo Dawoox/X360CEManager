@@ -29,9 +29,6 @@ namespace X360CEManager
 
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
-            Logger.Trace(args.Game.Name);
-            Logger.Trace(Settings.Settings.startWithSelectedGames.ToString());
-            Logger.Trace(args.Game.Tags.Contains(_flagTag).ToString());
             // If the game is marked start with the flag-tag and needed settings are true start the emulator
             if (Settings.Settings.startWithSelectedGames && args.Game.Tags.Contains(_flagTag))
             {
@@ -85,7 +82,7 @@ namespace X360CEManager
                 {
                     _flagTag = tag;
                     found = true;
-                    Logger.Trace("FlagTag found, updating the reference");
+                    Logger.Debug("FlagTag found, updating the reference");
                     break; 
                 }
             }
