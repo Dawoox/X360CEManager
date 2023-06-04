@@ -30,7 +30,8 @@ namespace X360CEManager
         public override void OnGameStarting(OnGameStartingEventArgs args)
         {
             // If the game is marked start with the flag-tag and needed settings are true start the emulator
-            if (Settings.Settings.startWithSelectedGames && args.Game.Tags.Contains(_flagTag))
+            if ((Settings.Settings.startWithSelectedGames && args.Game.Tags.Contains(_flagTag)) ||
+                Settings.Settings.startWithAllGames)    // or if the startWithAllGames setting is turned on
             {
                 Logger.Debug("X360CE scheduled to start with " + args.Game.Name);
                 StartEmulator();
@@ -39,10 +40,10 @@ namespace X360CEManager
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
-            // If x360ce started with playnite or config to not start with games, return
+            // If x360ce started with playnite return
             if (Settings.Settings.startWithPlaynite) return;
-            // If x360ce started with the game, closed it
-            if (args.Game.Tags.Contains(_flagTag))
+            // If x360ce started with the game, stop it
+            if (args.Game.Tags.Contains(_flagTag) || Settings.Settings.startWithAllGames)
             {
                 Logger.Debug("X360CE scheduled to stop with " + args.Game.Name);
                 StopEmulator();

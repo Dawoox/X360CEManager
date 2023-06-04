@@ -12,5 +12,7 @@
         <CheckBox IsChecked="{Binding Settings.startWithPlaynite}"/>
         <TextBlock Text="Start X360CE with selected games:"/>
         <CheckBox IsChecked="{Binding Settings.startWithSelectedGames}"/>
+        <TextBlock Text="Start X360CE with all games:"/>
+        <CheckBox IsChecked="{Binding Settings.startWithAllGames}"/>
     </StackPanel>
 </UserControl>
